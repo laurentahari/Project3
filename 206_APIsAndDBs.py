@@ -26,7 +26,7 @@ import re
 
 ##### TWEEPY SETUP CODE:
 # Authentication information should be in a twitter_info file...
-consumer_key = twitter_info.consumer_key
+consumer_key = twitter_info.consumer_key #import from twitter_info
 consumer_secret = twitter_info.consumer_secret
 access_token = twitter_info.access_token
 access_token_secret = twitter_info.access_token_secret
@@ -60,8 +60,8 @@ except:
 
 # Define your function get_user_tweets here:
 def get_user_tweets(searchword):
-	identity = "twitter_{}".format(searchword)
-	if identity in CACHE_DICTION:
+	identity = "twitter_{}".format(searchword) #see if it is in the cache dictionary
+	if identity in CACHE_DICTION: #if so, print..
 		print ('using cached data')
 		twitter_results = CACHE_DICTION[identity] #grab the data from the cache
 	else:
@@ -76,17 +76,17 @@ def get_user_tweets(searchword):
 		cache_file = open(CACHE_FNAME,'w') # open the cache file for writing
 		cache_file.write(json.dumps(CACHE_DICTION)) # make the whole dictionary holding data and unique identifiers into a json-formatted string, and write that wholllle string to a file so you'll have it next time!
 		cache_file.close()
-	return twitter_results
+	return (twitter_results)
 
 
 def get_user_info(user):
-	identity = "user_{}".format(user)
-	if identity in CACHE_DICTION:
-		print ('using cached data user info')
+	identity = "user_{}".format(user)  #see if in cache dictionary
+	if identity in CACHE_DICTION: #if so.. print
+		print ('using cached data user info') #print
 		twitter_results = CACHE_DICTION[identity] #grab the data from the cache
-	else:
-		print("api data getting")
-		twitter_results = api.get_user(user) #get it from the internet
+	else: #if not using caching
+		print("api data getting") #get it from the internet
+		twitter_results = api.get_user(user)
 		CACHE_DICTION[identity] = twitter_results #add it to dictionary
 		##print('getting data from internet for', phrase)
 
@@ -100,7 +100,7 @@ def get_user_info(user):
 
 # Write an invocation to the function for the "umich" user timeline and
 # save the result in a variable called umich_tweets:
-umich_tweets= get_user_tweets('umich')
+umich_tweets= get_user_tweets('umich') #searching for the "searchword" umich in the tweets
 
 ## Task 2 - Creating database and loading data into database
 ## You should load into the Users table:
@@ -175,21 +175,21 @@ conn.commit()
 # Make a query to select all of the records in the Users database.
 # Save the list of tuples in a variable called users_info.
 
-query = "SELECT * from Users"
-users_info= cur.execute(query).fetchall()
+query = "SELECT * from Users" #select all users
+users_info= cur.execute(query).fetchall() #saved into list
 
 # Make a query to select all of the user screen names from the database.
 # Save a resulting list of strings (NOT tuples, the strings inside them!)
 # in the variable screen_names. HINT: a list comprehension will make
 # this easier to complete!
-screen_names = [tups[1] for tups in user_info]
+screen_names = [tups[1] for tups in user_info] #use list comprehention to find all screennames; save the list of strings to screen_names
 
 # Make a query to select all of the tweets (full rows of tweet information)
 # that have been retweeted more than 10 times. Save the result
 # (a list of tuples, or an empty list) in a variable called retweets
-query= "SELECT tweet_id, time_posted, tweet_text, user_id, retweets from Tweets WHERE retweets > 10"
-retweets = cur.execute(query).fetchall()
-print (retweets[1][-1])
+query= "SELECT tweet_id, time_posted, tweet_text, user_id, retweets from Tweets WHERE retweets > 10" # select all tweet info and find the tweets that have been retweeted > 10 times
+retweets = cur.execute(query).fetchall() #save in list
+print (retweets[1][-1]) #identifying retweet count and printing it to pass the test if retweet count >10
 
 
 #print (retweets)
@@ -198,9 +198,9 @@ print (retweets[1][-1])
 # the users who have favorited more than 500 tweets. Access all those
 # strings, and save them in a variable called favorites,
 # which should ultimately be a list of strings.
-query= "SELECT description from Users WHERE fav_num >500"
-var = cur.execute(query).fetchall()
-favorites = [tups[0] for tups in var]
+query= "SELECT description from Users WHERE fav_num >500" # find where favorite number is more than 500
+var = cur.execute(query).fetchall() #save in list
+favorites = [tups[0] for tups in var] # using list comprehension and saving to the variable favorites
 
 
 # Make a query using an INNER JOIN to get a list of tuples with 2
@@ -214,10 +214,10 @@ favorites = [tups[0] for tups in var]
 # list of tuples in a variable called joined_data2.
 
 query= "SELECT Users.screen_name, Tweets.tweet_text from Tweets INNER JOIN Users ON Users.user_id=Tweets.user_id WHERE Tweets.retweets >=1 ORDER BY Tweets.retweets" #order in descending order based on number of retweets
-joined_data= cur.execute(query).fetchall()
-joined_data2 = [joined_data]
+joined_data= cur.execute(query).fetchall() #save in list
+joined_data2 = [joined_data] #make it a list
 
-conn.close()
+conn.close() #close connection
 #print(type(retweets))
 
 
